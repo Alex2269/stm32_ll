@@ -1,0 +1,22 @@
+#include "exti_encoder.h"
+
+/**
+ * @brief encoder connected to pins: PA6 and PA7, pin PA5 button switch
+ * @param None
+ * @retval None
+ */
+void EXTI_Callbac(void)
+{
+  static int32_t count = 0;
+  LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_7, LL_GPIO_MODE_INPUT);
+  LL_GPIO_SetPinPull(GPIOA, LL_GPIO_PIN_7, LL_GPIO_PULL_UP);
+  for(uint16_t i=0; i<5; i++) __asm volatile ("nop");
+  // delay_us(1); // anti-tinkling
+
+  if(LL_GPIO_IsInputPinSet(GPIOA, LL_GPIO_PIN_7) == 1) count++;
+  else count--;
+
+  LL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+  printf("encoder: %d\r\n", count);
+}
+
